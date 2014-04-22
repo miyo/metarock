@@ -1,6 +1,6 @@
 (ns mhdl.core)
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defn define-module ;; マクロじゃないとだめ
+  [name func]
+  {:name name :func func})
+
