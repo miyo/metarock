@@ -18,7 +18,7 @@
 (defn- delay-inserted-arg [s level]
   (if (= level 0)
     (delay-inserted-graph s)
-    (list :delay (delay-inserted-arg s (dec level)))))
+    (list 'delay (delay-inserted-arg s (dec level)))))
 
 (defn delay-insertion [s]
   (delay-inserted-graph (:exp (leveled-tree s))))

@@ -1,62 +1,36 @@
-(ns mhdl.visualize
-  (:require clojure.core))
-
-(defn read-as-sexp [path]
-  (read-string (str "(" (slurp path) ")")))
-
-(defn parse-module [s]
-  (let [get-module-name (fn [x] (first x))
-        get-module-args (fn [x] (first (rest (first (rest x)))))
-        get-module-body (fn [x] (first (rest (rest (first (rest s))))))]
-    {:name (get-module-name s)
-     :args (get-module-args s)
-     :body (get-module-body s)}))
-
-(defn parse-sexp [s]
-  (let [x (first s)]
-    (if (= x 'def-module)
-      (parse-module (rest s))
-      nil)))
+(ns mhdl.visualize)
 
 (declare gen-dot-symbol gen-dot-graph gen-dot-edge gen-dot-edge-0)
 
-(defn gen-dot-symbol [s args]
-  (do
-    (if (some #(= % s) args)
-      (println (str "\"" s "\"" "[shape = box, peripheries = 2];"))
-      (println (str "\"" s "\"" "[shape = box];")))
-    {:name s :level 0}))
+(defn- make-box [s & opt]
+  (if (some #(= % 'double) opt)
+    (println (str "\"" s "\"" "[shape = box, peripheries = 2];"))
+    (println (str "\"" s "\"" "[shape = box];"))))
 
-(defn gen-dot-graph [s args]
+(defn- print-dot-edge [src dst]
+  (println (str "\"" src "\"" " -> " "\"" dst "\"" ";")))
+
+(defn- gen-dot-symbol [s args]
+  (do
+    (make-box s (if (some #(= % s) args) 'double 'single))
+    s))
+
+(defn- gen-dot-graph [s args]
   (if (symbol? s)
     (gen-dot-symbol s args)
     (gen-dot-edge s args)))
 
-(defn gen-dot-edge-0 [a dest level]
-  (if (= (:level a) level)
-    (println (str "\"" (:name a) "\"" " -> " "\"" dest "\"" ";"))
-    (do
-      (println (str "\"" (:name a) "\"" " -> " "\"" (str "FF-" (:name a)) "\"" ";"))
-      (println (str "\"" (str "FF-" (:name a)) "\"" " -> " "\"" (str (:name a) 'z) "\"" ";"))
-      (println (str "\"" (:name a) 'z "\"" "[shape = box];"))
-      (gen-dot-edge-0 {:name (str (:name a) 'z) :level (+ (:level a) 1)} dest level))))
-
-(defn gen-dot-edge [s args]
+(defn- gen-dot-edge [s args]
   (let
       [op (gensym (str "op-" (first s) "-"))
        result (gensym (str "result-" (first s) "-"))
-       inputs (map (fn [a] (gen-dot-graph a args)) (rest s))
+       inputs (map #(gen-dot-graph % args) (rest s))
        ]
-    (let [level (apply max (map :level inputs))]
-      (do
-        (dorun
-         (map (fn [a]
-                (if (= (:level a) level)
-                  (println (str "\"" (:name a) "\"" " -> " "\"" op "\"" ";"))
-                  (gen-dot-edge-0 a op level))) inputs))
-        (println (str "\"" result "\"" "[shape = box];"))
-        (println (str "\"" op "\"" "->" "\"" result "\"" ";"))
-        {:name result :level (+ level 1)}))))
+    (do
+      (dorun (map #(print-dot-edge % op) inputs))
+      (make-box result)
+      (print-dot-edge op result)
+      result)))
 
 (defn gen-dot [name sexp args]
   (do

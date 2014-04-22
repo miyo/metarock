@@ -10,3 +10,5 @@
 (def-module longadd
   (fn [a b c d e f g] (+ a (+ b (+ c (+ d (+ e (+ f g))))))))
 
+(def-module longadd2
+  (fn [a b c d e f g] (+ a (+ b c) (+ d (+ e (+ f g))))))
