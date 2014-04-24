@@ -1,4 +1,4 @@
-(ns mhdl.visualize)
+(ns metarock.visualize)
 
 (declare gen-dot-symbol gen-dot-graph gen-dot-edge gen-dot-edge-0)
 

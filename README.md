@@ -1,4 +1,4 @@
-mhdl
+metarock
 ====
 
 Yet another hardware description language

@@ -1,4 +1,4 @@
-(ns mhdl.core
+(ns metarock.core
   (:require clojure.core))
 
 (defn read-as-sexp [path]

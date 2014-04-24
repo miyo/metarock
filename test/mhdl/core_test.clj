@@ -1,6 +1,6 @@
-(ns mhdl.core-test
+(ns metarock.core-test
   (:require [clojure.test :refer :all]
-            [mhdl.core :refer :all]))
+            [metarock.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

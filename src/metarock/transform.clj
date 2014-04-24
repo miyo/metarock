@@ -1,4 +1,4 @@
-(ns mhdl.transform)
+(ns metarock.transform)
 
 (defn- leveled-tree [s]
   (if (symbol? s)
