@@ -16,7 +16,7 @@
     s))
 
 (defn- gen-dot-graph [s args]
-  (if (symbol? s)
+  (if (or (symbol? s) (number? s))
     (gen-dot-symbol s args)
     (gen-dot-edge s args)))
 
